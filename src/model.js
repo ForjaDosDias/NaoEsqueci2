@@ -133,17 +133,17 @@ export function demoProducts() {
     }
     return out;
   };
-  const mk = (emoji, name, pack, cat, interval, daysAgo, n) =>
-    ({ ...makeProduct({ emoji, name, pack, cat, initialInterval: interval }), purchases: hist(interval, daysAgo, n) });
+  const mk = (emoji, name, pack, cat, interval, daysAgo, n, price) =>
+    ({ ...makeProduct({ emoji, name, pack, cat, initialInterval: interval }), purchases: hist(interval, daysAgo, n), lastPrice: price ?? null });
   return [
-    mk('☕', 'Café Pilão',       '500g',     'Mercearia',  21, 19, 4),
-    mk('🥛', 'Leite integral',   '1 L',      'Laticínios',  4,  5, 6),
-    mk('🧻', 'Papel higiênico',  '12 rolos', 'Limpeza',    24, 22, 3),
-    mk('🧴', 'Detergente',       '500ml',    'Limpeza',    18, 16, 5),
-    mk('🍚', 'Arroz tipo 1',     '5kg',      'Mercearia',  45,  6, 3),
-    mk('🫘', 'Feijão carioca',   '1kg',      'Mercearia',  20,  4, 4),
-    mk('🪥', 'Creme dental',     '90g',      'Higiene',    30, 31, 2),
-    mk('🧼', 'Sabão em pó',      '1,6kg',    'Limpeza',    35,  9, 3),
-    mk('🥚', 'Ovos',             '30 un',    'Mercearia',  12,  3, 5),
+    mk('☕', 'Café Pilão',       '500g',     'Mercearia',  21, 19, 4, 18.90),
+    mk('🥛', 'Leite integral',   '1 L',      'Laticínios',  4,  5, 6,  5.49),
+    mk('🧻', 'Papel higiênico',  '12 rolos', 'Limpeza',    24, 22, 3, 24.90),
+    mk('🧴', 'Detergente',       '500ml',    'Limpeza',    18, 16, 5,  2.89),
+    mk('🍚', 'Arroz tipo 1',     '5kg',      'Mercearia',  45,  6, 3, 27.50),
+    mk('🫘', 'Feijão carioca',   '1kg',      'Mercearia',  20,  4, 4,  8.79),
+    mk('🪥', 'Creme dental',     '90g',      'Higiene',    30, 31, 2,  6.99),
+    mk('🧼', 'Sabão em pó',      '1,6kg',    'Limpeza',    35,  9, 3, 21.90),
+    mk('🥚', 'Ovos',             '30 un',    'Mercearia',  12,  3, 5, 19.90),
   ];
 }

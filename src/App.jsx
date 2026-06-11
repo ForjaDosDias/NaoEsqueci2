@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useStore } from './store.js';
+import { useStore, withOnList } from './store.js';
 import { BottomNav, Sheet, Toast } from './components.jsx';
 import AuthScreen from './screens/Auth.jsx';
 import HomeScreen from './screens/Home.jsx';
@@ -18,9 +18,7 @@ export default function App() {
   const [toast, setToast] = useState(null);
   const [prefillName, setPrefillName] = useState('');
 
-  const showToast = msg => {
-    setToast({ msg, t: Date.now() });
-  };
+  const showToast = msg => setToast({ msg, t: Date.now() });
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 2600);
@@ -37,7 +35,7 @@ export default function App() {
   if (!state.user) {
     return (
       <div className="app-shell">
-        <AuthScreen onLogin={({ name, email, signup, demo }) => {
+        <AuthScreen onLogin={({ name, email, demo }) => {
           dispatch({ type: 'login', name, email, demo });
           setScreen(demo ? 'home' : 'armario');
         }} />
@@ -45,8 +43,8 @@ export default function App() {
     );
   }
 
-  const products = state.products;
-  const listCount = products.filter(p => p.onList).length;
+  const products = withOnList(state.products, state.items);
+  const listCount = state.items.length;
   const detailProduct = detail ? products.find(p => p.id === detail) : null;
 
   const onAddToList = p => { dispatch({ type: 'toggle-list', id: p.id }); if (!p.onList) showToast(`${p.name} foi para a lista`); };
@@ -73,13 +71,8 @@ export default function App() {
         }} />
     ),
     lista: (
-      <ListaScreen products={products} onBack={() => setScreen('home')}
-        onToggleList={p => dispatch({ type: 'toggle-list', id: p.id })}
-        onFinish={ids => {
-          dispatch({ type: 'mark-bought-many', ids });
-          showToast('Compra registrada! Previsões reiniciadas.');
-          setScreen('home');
-        }} />
+      <ListaScreen lists={state.lists} items={state.items} activeListId={state.activeListId}
+        products={products} dispatch={dispatch} onToast={showToast} />
     ),
     perfil: (
       <PerfilScreen user={state.user} settings={state.settings} receipts={state.receipts} dispatch={dispatch}
@@ -103,12 +96,12 @@ export default function App() {
     ),
     scan: (
       <ScanScreen products={products} onBack={() => setScreen('buy')}
-        onConfirm={({ ids, newItems, date, note }) => {
-          if (ids.length) dispatch({ type: 'mark-bought-many', ids, date });
+        onConfirm={({ ids, prices, newItems, date, note }) => {
+          if (ids.length) dispatch({ type: 'mark-bought-many', ids, prices, date });
           if (newItems.length) dispatch({ type: 'add-many', items: newItems, date });
           dispatch({ type: 'receipt', receipt: { key: note.key, uf: note.uf, store: note.store, total: note.total, itemCount: note.itemCount, date } });
           setScreen('home');
-          showToast(`Nota registrada · ${note.itemCount} ${note.itemCount === 1 ? 'item' : 'itens'} datados`);
+          showToast(`Nota registrada · ${note.itemCount} ${note.itemCount === 1 ? 'item datado' : 'itens datados'}`);
         }} />
     ),
     status: (
