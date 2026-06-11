@@ -79,10 +79,10 @@ export const DEMO_NOTE = {
   store: 'Mercado São Jorge',
   total: 56.38,
   items: [
-    { emoji:'☕', name:'Café Pilão',      pack:'500g',     cat:'Mercearia',  price:18.90, interval:21 },
-    { emoji:'🥛', name:'Leite integral',  pack:'1 L',      cat:'Laticínios', price: 5.49, interval:4 },
-    { emoji:'🍝', name:'Macarrão',        pack:'500g',     cat:'Mercearia',  price: 4.20, interval:15 },
-    { emoji:'🧻', name:'Papel higiênico', pack:'12 rolos', cat:'Limpeza',    price:24.90, interval:24 },
-    { emoji:'🧴', name:'Detergente',      pack:'500ml',    cat:'Limpeza',    price: 2.89, interval:18 },
+    { emoji:'☕', name:'Café Pilão',      pack:'500g',     cat:'Mercearia',  price:18.90, qty:1, unit:'UN', interval:21 },
+    { emoji:'🥛', name:'Leite integral',  pack:'1 L',      cat:'Laticínios', price: 5.49, qty:2, unit:'UN', interval:4 },
+    { emoji:'🍝', name:'Macarrão',        pack:'500g',     cat:'Mercearia',  price: 4.20, qty:1, unit:'UN', interval:15 },
+    { emoji:'🧻', name:'Papel higiênico', pack:'12 rolos', cat:'Limpeza',    price:24.90, qty:1, unit:'UN', interval:24 },
+    { emoji:'🧴', name:'Detergente',      pack:'500ml',    cat:'Limpeza',    price: 2.89, qty:3, unit:'UN', interval:18 },
   ],
 };

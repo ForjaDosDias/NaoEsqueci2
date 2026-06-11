@@ -195,7 +195,11 @@ export function ProductDetail({ p, onMarkBought, onAddToList, onDelete, onClose 
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px', marginBottom: 16 }}>
         <Confidence product={p} />
-        {endDate && <span style={{ font: '500 12px ' + C.font, color: C.n400 }}>previsão: {fmtShort(endDate)}</span>}
+        <span style={{ font: '500 12px ' + C.font, color: C.n400 }}>
+          {p.lastPrice ? `último preço: R$ ${p.lastPrice.toFixed(2).replace('.', ',')}` : ''}
+          {p.lastPrice && endDate ? ' · ' : ''}
+          {endDate ? `previsão: ${fmtShort(endDate)}` : ''}
+        </span>
       </div>
 
       {history.length > 0 && (
