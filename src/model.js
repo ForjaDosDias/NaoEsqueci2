@@ -12,7 +12,10 @@ export const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d
 export const addDays = (d, n) => new Date(d.getTime() + n * DAY);
 export const daysBetween = (a, b) => Math.round((b - a) / DAY);
 export const fmtShort = d => `${d.getDate()} ${MESES[d.getMonth()]}`;
-export const iso = d => d.toISOString().slice(0, 10);
+export const iso = d => {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
 export const fromIso = s => { const [y, m, dd] = s.split('-').map(Number); return new Date(y, m - 1, dd); };
 
 export const FREQS = [

@@ -56,7 +56,10 @@ export function guessMeta(rawName) {
 
 /* "CAFE PILAO TRAD 500G VACUO" → "500g" */
 export function extractPack(rawName) {
-  const m = normalize(rawName).match(/(\d+(?:[.,]\d+)?)\s*(KG|G|GR|L|LT|ML|UN|RL|ROLOS?|M)\b/);
+  // não usa normalize() aqui: ele troca a vírgula/ponto decimal por espaço
+  // ("1,6KG" → "1 6KG") e quebraria as embalagens com casas decimais.
+  const s = (rawName || '').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const m = s.match(/(\d+(?:[.,]\d+)?)\s*(KG|G|GR|L|LT|ML|UN|RL|ROLOS?|M)\b/);
   if (!m) return null;
   const unit = { GR: 'g', G: 'g', KG: 'kg', L: 'L', LT: 'L', ML: 'ml', UN: 'un', RL: 'rolos', ROLO: 'rolos', ROLOS: 'rolos', M: 'm' }[m[2]] || m[2].toLowerCase();
   return `${m[1].replace('.', ',')}${unit === 'un' || unit === 'rolos' ? ' ' : ''}${unit}`;
