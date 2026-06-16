@@ -221,7 +221,7 @@ export default function ListaScreen({ lists, items, activeListId, products, disp
 
       {/* nova lista */}
       <Sheet open={newOpen} onClose={() => setNewOpen(false)} height="46%">
-        <NewListForm onCreate={(name, emoji) => { dispatch({ type: 'list-create', name, emoji }); setNewOpen(false); }} />
+        <NewListForm onCreate={(name, emoji) => { dispatch({ type: 'list-create', name, emoji }); setNewOpen(false); onToast(`Lista “${name}” criada`); }} />
       </Sheet>
 
       {/* gerenciar lista ativa */}
@@ -239,17 +239,23 @@ const LIST_EMOJIS = ['🛒', '🥩', '🎂', '🏖️', '🏠', '💊', '🐶', 
 function NewListForm({ onCreate }) {
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('🛒');
+  const [err, setErr] = useState('');
+  const submit = () => {
+    if (!name.trim()) { setErr('Dê um nome à lista para criar.'); return; }
+    onCreate(name.trim(), emoji);
+  };
   return (
     <div>
       <div style={{ fontFamily: C.display, fontSize: 22, fontWeight: 700, color: C.n900, marginBottom: 14 }}>Nova lista</div>
-      <Field label="Nome" value={name} onChange={setName} placeholder="Ex: Churrasco, Farmácia…" autoFocus />
-      <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginBottom: 18 }}>
+      <Field label="Nome" value={name} onChange={v => { setName(v); if (err) setErr(''); }} placeholder="Ex: Churrasco, Farmácia…" autoFocus />
+      <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginBottom: err ? 8 : 18 }}>
         {LIST_EMOJIS.map(e => (
           <button key={e} onClick={() => setEmoji(e)} style={{ width: 40, height: 40, borderRadius: 11, fontSize: 20, cursor: 'pointer',
             border: `1.5px solid ${emoji === e ? C.green500 : C.n200}`, background: emoji === e ? C.green50 : C.n0 }}>{e}</button>
         ))}
       </div>
-      <Btn full size="lg" icon="check" disabled={!name.trim()} onClick={() => onCreate(name.trim(), emoji)}>Criar lista</Btn>
+      {err && <div style={{ font: '600 12.5px ' + C.font, color: C.red600, marginBottom: 12 }}>{err}</div>}
+      <Btn full size="lg" icon="check" onClick={submit}>Criar lista</Btn>
     </div>
   );
 }
