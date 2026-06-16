@@ -164,7 +164,7 @@ export const Sheet = ({ open, onClose, children, height }) => (
       maxHeight: height || '82%', overflowY: 'auto',
     }}>
       <div style={{ width: 40, height: 5, borderRadius: 999, background: C.n200, margin: '0 auto 16px' }}></div>
-      {children}
+      {open ? children : null}
     </div>
   </div>
 );
