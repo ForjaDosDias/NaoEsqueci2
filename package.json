@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "server": "node server/index.js",
     "start": "vite build && node server/index.js",
-    "test": "node test/nfce-parser.test.mjs && node test/smoke.test.mjs"
+    "test": "node test/nfce-parser.test.mjs && node test/store-model.test.mjs && node test/smoke.test.mjs"
   },
   "dependencies": {
     "jsqr": "^1.4.0",

@@ -121,7 +121,7 @@ let seq = 0;
 export const newId = () => `p${Date.now().toString(36)}${(seq++).toString(36)}`;
 
 export function makeProduct({ emoji = '🛒', name, pack = '1 un', cat = 'Mercearia', initialInterval = 30, purchases = [] }) {
-  return { id: newId(), emoji, name, pack, cat, initialInterval, purchases, onList: false, manualList: false, snoozedUntil: null };
+  return { id: newId(), emoji, name, pack, cat, initialInterval, purchases, onList: false, manualList: false, snoozedUntil: null, dismissedAuto: false, lastPrice: null };
 }
 
 /* Despensa de demonstração — histórico de compras realista para
