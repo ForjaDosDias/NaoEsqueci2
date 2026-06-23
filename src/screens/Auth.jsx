@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { C } from '../tokens.js';
 import { Icon } from '../icons.jsx';
 import { Btn, Field } from '../components.jsx';
+import { validateCredentials } from '../auth.js';
 
 export default function AuthScreen({ onLogin }) {
   const [mode, setMode] = useState('login'); // login | signup
@@ -10,12 +11,22 @@ export default function AuthScreen({ onLogin }) {
   const [pw, setPw] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [err, setErr] = useState('');
+  const [info, setInfo] = useState('');
 
   const submit = () => {
-    if (!email.trim() || !email.includes('@')) { setErr('Informe um e-mail válido.'); return; }
-    if (mode === 'signup' && !name.trim()) { setErr('Conta nova precisa de um nome.'); return; }
+    setInfo('');
+    const error = validateCredentials({ mode, name, email, pw });
+    if (error) { setErr(error); return; }
+    setErr('');
     const userName = mode === 'signup' ? name.trim() : email.split('@')[0].replace(/^./, c => c.toUpperCase());
     onLogin({ name: userName, email: email.trim(), signup: mode === 'signup' });
+  };
+
+  const forgotPassword = () => {
+    setInfo('');
+    if (!email.trim() || !email.includes('@')) { setErr('Informe seu e-mail acima para recuperar a senha.'); return; }
+    setErr('');
+    setInfo('Recuperação de senha chega em breve. Por enquanto, entre com seu e-mail ou explore com dados de exemplo.');
   };
 
   return (
@@ -55,9 +66,10 @@ export default function AuthScreen({ onLogin }) {
         right={<div onClick={() => setShowPw(s => !s)} style={{ cursor: 'pointer' }}><Icon name={showPw ? 'eyeOff' : 'eye'} size={18} color={C.n400} /></div>} />
 
       {err && <div style={{ font: '600 12.5px ' + C.font, color: C.red600, marginTop: -6, marginBottom: 12 }}>{err}</div>}
+      {info && <div style={{ font: '600 12.5px ' + C.font, color: C.green700, marginTop: -6, marginBottom: 12 }}>{info}</div>}
 
       {mode === 'login' && <div style={{ textAlign: 'right', marginTop: -4, marginBottom: 14 }}>
-        <span style={{ font: '600 13px ' + C.font, color: C.green700, cursor: 'pointer' }}>Esqueci a senha</span>
+        <span onClick={forgotPassword} style={{ font: '600 13px ' + C.font, color: C.green700, cursor: 'pointer' }}>Esqueci a senha</span>
       </div>}
 
       <Btn full size="lg" icon="arrowRight" onClick={submit} style={{ marginTop: mode === 'signup' ? 8 : 0 }}>
@@ -74,6 +86,9 @@ export default function AuthScreen({ onLogin }) {
         onClick={() => onLogin({ name: 'Felipe', email: 'felipe@gmail.com', signup: false, demo: true })}>
         Google
       </Btn>
+      <div style={{ font: '500 11.5px ' + C.font, color: C.n400, textAlign: 'center', marginTop: 8 }}>
+        Login social é demonstrativo neste protótipo — entra com dados de exemplo.
+      </div>
 
       <div style={{ textAlign: 'center', marginTop: 12 }}>
         <span onClick={() => onLogin({ name: 'Felipe', email: 'demo@naoesqueci.app', demo: true })}
