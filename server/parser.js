@@ -30,10 +30,13 @@ export function parseNfcePage(html) {
     items.push({ name, qty: qty ?? 1, unit, unitPrice, total });
   }
 
-  // dedup: alguns layouts repetem o item numa linha de detalhe
+  // dedup: alguns layouts repetem o item numa linha de detalhe.
+  // A chave inclui qty/unitPrice além de total — assim, quando o
+  // layout não traz o total por item (total: null), duas linhas do
+  // mesmo produto com quantidades/preços distintos não colidem.
   const seen = new Set();
   const unique = items.filter(it => {
-    const k = `${it.name}|${it.total}`;
+    const k = `${it.name}|${it.total}|${it.qty}|${it.unitPrice}`;
     if (seen.has(k)) return false;
     seen.add(k);
     return true;

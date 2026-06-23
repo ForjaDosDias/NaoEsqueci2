@@ -113,7 +113,7 @@ export const CATALOG = [
   { emoji:'🧃', name:'Suco',             cat:'Bebidas',    pack:'1 L',      interval:8 },
 ];
 
-export const CATEGORIES = ['Mercearia', 'Laticínios', 'Padaria', 'Limpeza', 'Higiene', 'Bebidas'];
+export const CATEGORIES = ['Mercearia', 'Laticínios', 'Padaria', 'Hortifruti', 'Carnes', 'Limpeza', 'Higiene', 'Bebidas'];
 
 export const EMOJIS = ['🛒','☕','🥛','🍚','🫘','🧻','🧴','🧼','🪥','🥚','🍞','🧀','🧈','🍝','🧂','🧃','🍬','🧽','🥩','🍌','🍅','🥦'];
 

@@ -67,7 +67,12 @@ export function nfceDate(parsed) {
   if (!parsed?.dhEmi) return null;
   if (/^\d{14}$/.test(parsed.dhEmi)) {
     const s = parsed.dhEmi;
-    return new Date(+s.slice(0,4), +s.slice(4,6) - 1, +s.slice(6,8));
+    const y = +s.slice(0,4), mo = +s.slice(4,6), d = +s.slice(6,8);
+    // valida componentes para evitar overflow silencioso (mês 00, dia 00…)
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+    const dt = new Date(y, mo - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return null;
+    return dt;
   }
   const d = new Date(parsed.dhEmi);
   return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
