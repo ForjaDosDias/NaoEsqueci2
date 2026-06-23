@@ -62,4 +62,48 @@ check('total da nota', note.total === 39.35);
 check('data de emissão', note.date === '2026-06-11');
 check('HTML sem itens → null', parseNfcePage('<html><body><p>captcha</p></body></html>') === null);
 
+/* #6 — layout sem total por item (.valor ausente): duas linhas do mesmo
+   produto com qtd/preço distintos não devem ser fundidas no dedup. */
+const FIXTURE_NO_TOTAL = `
+<!DOCTYPE html><html><body>
+<div id="u20" class="txtTopo">MERCADO SEM TOTAL</div>
+<table id="tabResult">
+  <tr id="Item1"><td>
+    <span class="txtTit">CAFE</span>
+    <span class="Rqtd"><strong>Qtde.:</strong>1</span>
+    <span class="RUN"><strong>UN: </strong>UN</span>
+    <span class="RvlUnit"><strong>Vl. Unit.:</strong>18,90</span>
+  </td></tr>
+  <tr id="Item2"><td>
+    <span class="txtTit">CAFE</span>
+    <span class="Rqtd"><strong>Qtde.:</strong>2</span>
+    <span class="RUN"><strong>UN: </strong>UN</span>
+    <span class="RvlUnit"><strong>Vl. Unit.:</strong>17,50</span>
+  </td></tr>
+</table></body></html>`;
+const noTotal = parseNfcePage(FIXTURE_NO_TOTAL);
+check('#6 dedup preserva itens distintos com total nulo', noTotal && noTotal.items.length === 2);
+check('#6 totais dos itens são nulos (layout sem .valor)', noTotal && noTotal.items.every(i => i.total === null));
+
+/* #6 — linha de detalhe verdadeiramente duplicada (idêntica) ainda é removida. */
+const FIXTURE_DUP = `
+<!DOCTYPE html><html><body>
+<div id="u20" class="txtTopo">MERCADO DUP</div>
+<table id="tabResult">
+  <tr id="Item1"><td>
+    <span class="txtTit">ARROZ</span>
+    <span class="Rqtd"><strong>Qtde.:</strong>1</span>
+    <span class="RUN"><strong>UN: </strong>UN</span>
+    <span class="RvlUnit"><strong>Vl. Unit.:</strong>22,00</span>
+  </td><td align="right"><span class="valor">22,00</span></td></tr>
+  <tr id="Item1det"><td>
+    <span class="txtTit">ARROZ</span>
+    <span class="Rqtd"><strong>Qtde.:</strong>1</span>
+    <span class="RUN"><strong>UN: </strong>UN</span>
+    <span class="RvlUnit"><strong>Vl. Unit.:</strong>22,00</span>
+  </td><td align="right"><span class="valor">22,00</span></td></tr>
+</table></body></html>`;
+const dup = parseNfcePage(FIXTURE_DUP);
+check('#6 dedup remove linha de detalhe idêntica', dup && dup.items.length === 1);
+
 process.exit(failed);

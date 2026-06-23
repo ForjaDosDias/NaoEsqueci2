@@ -3,7 +3,7 @@
    v2: múltiplas listas de compras com quantidades e preços.
    =========================================================== */
 import { useEffect, useReducer } from 'react';
-import { addDays, demoProducts, estimate, freqDays, iso, makeProduct, newId, today } from './model.js';
+import { addDays, demoProducts, estimate, freqDays, iso, isSnoozed, makeProduct, newId, today } from './model.js';
 
 const KEY = 'nao-esqueci-v2';
 const OLD_KEY = 'nao-esqueci-v1';
@@ -48,14 +48,16 @@ const defaultListId = s => s.activeListId && s.lists.some(l => l.id === s.active
   ? s.activeListId
   : s.lists[0]?.id || null;
 
-/* Itens que acabaram entram sozinhos na lista padrão (previstos) */
-function autoPopulate(state) {
+/* Itens que acabaram entram sozinhos na lista padrão (previstos).
+   - `isSnoozed`: dispensa temporal ("ainda tenho") → volta sozinho ao vencer o prazo.
+   - `dismissedAuto`: dispensa permanente (removeu o previsto à mão) → só volta após nova compra. */
+export function autoPopulate(state) {
   const listId = state.lists[0]?.id;
   if (!listId) return state;
   const inAnyList = new Set(state.items.map(i => i.productId).filter(Boolean));
   const add = [];
   for (const p of state.products) {
-    if (inAnyList.has(p.id) || p.dismissedAuto) continue;
+    if (inAnyList.has(p.id) || isSnoozed(p) || p.dismissedAuto) continue;
     if (estimate(p).status === 'out') {
       add.push({ id: newId(), listId, productId: p.id, name: p.name, emoji: p.emoji, cat: p.cat, qty: 1, unit: 'un', predicted: true, checked: false });
     }
@@ -77,7 +79,7 @@ function ensureLists(state) {
   return { ...state, lists: [def], activeListId: def.id };
 }
 
-function reducer(state, action) {
+export function reducer(state, action) {
   switch (action.type) {
     case 'login': {
       const s = ensureLists(state);
@@ -140,7 +142,8 @@ function reducer(state, action) {
           if (p.id !== action.id) return p;
           const { interval } = estimate(p);
           const days = Math.max(2, Math.round((interval || 14) * 0.15));
-          return { ...p, snoozedUntil: iso(addDays(today(), days)), dismissedAuto: true };
+          // snooze é temporal: ao vencer o prazo, o item volta sozinho à lista (#5).
+          return { ...p, snoozedUntil: iso(addDays(today(), days)), dismissedAuto: false };
         }),
         items: state.items.filter(i => !(i.productId === action.id && i.predicted)),
       };

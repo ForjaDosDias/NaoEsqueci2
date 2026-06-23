@@ -8,8 +8,9 @@ export default function StatusScreen({ products, onBack, onOpen, onAddToList }) 
   const [filter, setFilter] = useState('all');
   const withStatus = products.map(p => ({ ...p, _st: estimate(p).status }));
   const order = { out: 0, low: 1, new: 2, ok: 3 };
+  // "Em dia" (ok) agrega também os "Aprendendo" (new) — manter exibição e contagem em sincronia (#7)
   const filtered = withStatus
-    .filter(p => filter === 'all' || p._st === filter)
+    .filter(p => filter === 'all' || p._st === filter || (filter === 'ok' && p._st === 'new'))
     .sort((a, b) => order[a._st] - order[b._st]);
 
   const filters = [['all', 'Todos', C.n700], ['out', 'Acabou', C.red600], ['low', 'Acabando', C.amber600], ['ok', 'Em dia', C.green600]];
