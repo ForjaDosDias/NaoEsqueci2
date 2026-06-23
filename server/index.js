@@ -22,7 +22,11 @@ function isAllowedSefazUrl(u) {
   let url;
   try { url = new URL(u); } catch { return false; }
   if (!/^https?:$/.test(url.protocol)) return false;
-  if (url.port && url.port !== '443' && url.port !== '80') return false;
+  // porta deve bater com o protocolo: https→443, http→80 (ou vazia)
+  if (url.port) {
+    const expected = url.protocol === 'https:' ? '443' : '80';
+    if (url.port !== expected) return false;
+  }
   const h = url.hostname.toLowerCase();
   if (!h.endsWith('.gov.br')) return false;
   return /(sefaz|fazenda|nfce|nfe|sefin|sef\.|sat\.|dfe|sped)/.test(h);
@@ -68,9 +72,13 @@ const json = (res, status, body) => {
 };
 
 const MIME = {
-  '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css',
-  '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon',
+  '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript',
+  '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png',
+  '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
+  '.gif': 'image/gif', '.ico': 'image/x-icon',
+  '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf',
   '.json': 'application/json', '.webmanifest': 'application/manifest+json',
+  '.map': 'application/json', '.txt': 'text/plain',
 };
 
 function serveStatic(req, res) {
@@ -93,6 +101,10 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/api/health') return json(res, 200, { ok: true });
 
   if (url.pathname === '/api/nfce') {
+    if (req.method !== 'GET') {
+      res.setHeader('Allow', 'GET');
+      return json(res, 405, { error: 'method_not_allowed', message: 'Use GET para consultar a NFC-e.' });
+    }
     const qrUrl = url.searchParams.get('url');
     if (!qrUrl) return json(res, 400, { error: 'bad_request', message: 'Parâmetro url é obrigatório.' });
     if (!isAllowedSefazUrl(qrUrl)) {

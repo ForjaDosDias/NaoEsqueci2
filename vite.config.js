@@ -6,8 +6,8 @@ export default defineConfig({
   server: {
     host: true,
     proxy: {
-      // backend leve da NFC-e (npm run server)
-      '/api': 'http://localhost:3001',
+      // backend leve da NFC-e (npm run server) — segue a mesma PORT do server
+      '/api': `http://localhost:${process.env.PORT || 3001}`,
     },
   },
 });
