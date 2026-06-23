@@ -35,9 +35,10 @@ export default function App() {
   if (!state.user) {
     return (
       <div className="app-shell">
-        <AuthScreen onLogin={({ name, email, demo }) => {
+        <AuthScreen onLogin={({ name, email, demo, signup }) => {
           dispatch({ type: 'login', name, email, demo });
           setScreen(demo ? 'home' : 'armario');
+          if (!demo) showToast(signup ? `Conta criada — bem-vindo, ${name}!` : `Bem-vindo de volta, ${name}!`);
         }} />
       </div>
     );

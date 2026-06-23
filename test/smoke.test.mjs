@@ -31,6 +31,17 @@ const body = () => window.document.body.textContent;
 check('tela de login renderiza a marca', body().includes('Esqueci'));
 check('teaser da Nota Fiscal aparece no login', body().includes('Nota Fiscal'));
 
+// #8 — UI deixa claro que o login social é demonstrativo (não é auth real)
+check('#8 login social sinalizado como demonstrativo', body().includes('demonstrativo'));
+
+// #4 — "Esqueci a senha" deixou de ser botão morto: responde com mensagem
+const forgotLink = [...window.document.querySelectorAll('span')]
+  .find(el => el.textContent.includes('Esqueci a senha'));
+check('link "Esqueci a senha" existe', !!forgotLink);
+forgotLink.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await new Promise(r => setTimeout(r, 40));
+check('#4 "Esqueci a senha" responde com mensagem', body().includes('e-mail acima'));
+
 // entra com dados de exemplo
 const demoLink = [...window.document.querySelectorAll('span')]
   .find(el => el.textContent.includes('Explorar com dados de exemplo'));
